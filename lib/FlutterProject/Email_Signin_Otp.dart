@@ -34,7 +34,7 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
 
       if (exists) {
         // 2️⃣ Send OTP via your API
-        final url = Uri.parse('http://localhost:8000/user/send-otp'); // Replace with your API URL
+        final url = Uri.parse('https://resourcely-5.onrender.com/user/send-otp'); // Replace with your API URL
 
         try {
           final response = await http.post(
@@ -132,7 +132,7 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
   }
 
   void validate_otp()async{
-    var v_url="http://localhost:8000/user/verify-otp";
+    var v_url="https://resourcely-5.onrender.com/user/verify-otp";
     try{
       final otp_data={
         "email":email_controller.text.toString().trim(),

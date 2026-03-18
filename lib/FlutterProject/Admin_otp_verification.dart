@@ -38,7 +38,7 @@ class _AdminOtpVerificationState extends State<AdminOtpVerification> {
       final bookingDate = date.toIso8601String().split("T")[0];
 
       final response = await http.post(
-        Uri.parse('http://localhost:8000/user/verify-slot-otp'),
+        Uri.parse('https://resourcely-5.onrender.com/user/verify-slot-otp'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "email": widget.booking['email'],

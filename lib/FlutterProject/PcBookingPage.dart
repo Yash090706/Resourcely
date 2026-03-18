@@ -751,7 +751,7 @@ class _PcbookingpageState extends State<Pcbookingpage> {
                       String? em = prefs.getString("email");
                       otp_email = em ?? "";
 
-                      final url = Uri.parse('http://localhost:8000/user/send-slot-otp');
+                      final url = Uri.parse('https://resourcely-5.onrender.com/user/send-slot-otp');
 
                       final response = await http.post(
                         url,
