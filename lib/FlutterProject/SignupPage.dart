@@ -74,6 +74,7 @@ class _SignuppageState extends State<Signuppage> {
       await userRef.set({
         "fullname": user.displayName,
         "email": user.email,
+        "role":"Student",
         "authProvider": "google",
         "createdAt": FieldValue.serverTimestamp(),
       });
@@ -175,6 +176,7 @@ class _SignuppageState extends State<Signuppage> {
           .set({
         "fullname": fname,
         "email": c_email,
+        "role":"Student",
         "SignedUpAt": FieldValue.serverTimestamp(),
       });
 
@@ -409,6 +411,25 @@ class _SignuppageState extends State<Signuppage> {
                   ],
                 ),
               ),
+            ),
+            Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top:15,left:5),
+                  child: Text("Already User? ",style: TextStyle(fontSize: 17,fontFamily: "Mono",),),
+                ),
+                InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return Signinpage();
+                    }));
+                  },
+                  child: Container( margin: EdgeInsets.only(top:15),
+                      child: Text("Sign In",style: TextStyle(fontSize: 20,fontFamily: "Mono",
+                          decoration: TextDecoration.underline,decorationColor: Colors.green,
+                          color:Colors.green))),
+                )
+              ],
             ),
           ],
         ),

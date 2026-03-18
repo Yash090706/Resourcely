@@ -145,7 +145,7 @@ class _HomepageState extends State<Homepage> {
       bool shouldBlock = false;
 
       DateTime now = DateTime.now();
-      // DateTime now = DateTime(2026, 2, 27, 13, 02);
+      // DateTime now = DateTime(2026, 2, 28, 10, 02);
 
       for (var doc in snapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;

@@ -293,7 +293,69 @@ class _ProfilePageState extends State<ProfilePage> {
                       shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                       padding: WidgetStatePropertyAll(EdgeInsets.all(15))
                   ),
-                      onPressed: (){}, child: Text("Delete Account ?",style: TextStyle(fontSize: 18,fontFamily: "Mono",fontWeight: FontWeight.w600),)),
+
+                      onPressed: () async {
+                        try {
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user == null) return;
+
+                          final userEmail = user.email;
+
+                          // 🔴 1️⃣ Delete bookings from PcRoom collection
+                          if (userEmail != null) {
+                            final bookingSnapshot = await FirebaseFirestore.instance
+                                .collection("PcRoom")
+                                .where("user_email", isEqualTo: userEmail)
+                                .get();
+
+                            for (var doc in bookingSnapshot.docs) {
+                              await doc.reference.delete();
+                            }
+                          }
+
+                          // 🔴 2️⃣ Delete user document from Users collection
+                          await FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc(user.uid)
+                              .delete();
+
+                          // 🔴 3️⃣ Delete user from Firebase Authentication
+                          await user.delete();
+
+                          // 🔴 4️⃣ Sign out
+                          await FirebaseAuth.instance.signOut();
+
+                          if (!mounted) return;
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Account & Bookings Deleted Successfully"),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Signinpage()
+                            ),
+                                (route) => false,
+                          );
+
+                        } on FirebaseAuthException catch (e) {
+                          if (!mounted) return;
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.message ?? "Deletion Failed"),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      }
+                      , child: Text("Delete Account ?",style: TextStyle(fontSize: 18,fontFamily: "Mono",fontWeight: FontWeight.w600),)),
                 )
               ],
             ),
