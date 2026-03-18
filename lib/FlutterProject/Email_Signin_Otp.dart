@@ -22,9 +22,8 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
   final otp_controller=TextEditingController();
   bool isloading=false;
 
-  void sendOtpIfUserExists() async {
+  Future<void> sendOtpIfUserExists() async {
     try {
-      // 1️⃣ Check if email exists in Firestore
       final querySnapshot = await FirebaseFirestore.instance
           .collection('Users')
           .where('email', isEqualTo: email_controller.text.toString().trim())
@@ -33,8 +32,7 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
       final bool exists = querySnapshot.docs.isNotEmpty;
 
       if (exists) {
-        // 2️⃣ Send OTP via your API
-        final url = Uri.parse('https://resourcely-5.onrender.com/user/send-otp'); // Replace with your API URL
+        final url = Uri.parse('https://resourcely-5.onrender.com/user/send-otp');
 
         try {
           final response = await http.post(
@@ -45,35 +43,39 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
             }),
           );
 
-          print(jsonDecode(response.body));
-          // Uncomment if you want to parse response
           if (response.statusCode == 200) {
             final data = jsonDecode(response.body);
             print('OTP sent successfully: ${data['msg']}');
-            // isloading=false;
-            reload();
+
+            setState(() {
+              isloading = false;
+              isFirst = false; // 🔥 switch to OTP screen
+            });
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                   "Otp sent to Registered Email!",
-                  style: TextStyle(fontSize: 16, color: Colors.white,fontFamily: "Mono"),
+                  style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Mono"),
                 ),
                 backgroundColor: Colors.green,
                 behavior: SnackBarBehavior.floating,
               ),
             );
-            // isloading=true;
           } else {
             final data = jsonDecode(response.body);
+
             setState(() {
-              isloading=false;
+              isloading = false;
             });
+
             print('Error: ${data['message'] ?? 'Unknown error'}');
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                   "Failed to send Otp!",
-                  style: TextStyle(fontSize: 16, color: Colors.white,fontFamily: "Mono"),
+                  style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Mono"),
                 ),
                 backgroundColor: Colors.red,
                 behavior: SnackBarBehavior.floating,
@@ -81,15 +83,17 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
             );
           }
         } catch (e) {
-          print('Error sending OTP: $e');
           setState(() {
-            isloading=false;
+            isloading = false;
           });
+
+          print('Error sending OTP: $e');
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
                 "Failed to send Otp!",
-                style: TextStyle(fontSize: 16, color: Colors.white,fontFamily: "Mono"),
+                style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Mono"),
               ),
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
@@ -97,10 +101,10 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
           );
         }
       } else {
-        // 3️⃣ User not found
         setState(() {
-          isloading=false;
+          isloading = false;
         });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -117,12 +121,17 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
         );
       }
     } catch (e) {
+      setState(() {
+        isloading = false;
+      });
+
       print('Error checking email: $e');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             "Something went wrong!",
-            style: TextStyle(fontSize: 16, color: Colors.white,fontFamily: "Mono"),
+            style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Mono"),
           ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
@@ -130,7 +139,6 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
       );
     }
   }
-
   void validate_otp()async{
     var v_url="https://resourcely-5.onrender.com/user/verify-otp";
     try{
@@ -156,7 +164,7 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
           MaterialPageRoute(builder: (_) => Homepage()),
         );
         setState(() {
-          isloading=true;
+          isloading=false;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -293,13 +301,12 @@ class _EmailSigninOtpState extends State<EmailSigninOtp> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
-                          onPressed: () {
-                            // isloading=true;
+                          onPressed: () async {
                             setState(() {
-                              isloading=true;
+                              isloading = true;
                             });
-                            sendOtpIfUserExists();
-                            // reload();
+
+                            await sendOtpIfUserExists(); // 🔥 important
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF00796B),
