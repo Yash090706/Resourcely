@@ -28,13 +28,12 @@ class _SplashpageState extends State<Splashpage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF00796B),
-      body: Container(
-        margin: EdgeInsetsGeometry.only(left:140),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
-              backgroundImage:AssetImage("Images/Resourcely_logo1.png"),
+              backgroundImage:AssetImage("Assets/Images/Resourcelylogo1.png"),
               radius: 70,
             ),
             SizedBox(height: 20,),

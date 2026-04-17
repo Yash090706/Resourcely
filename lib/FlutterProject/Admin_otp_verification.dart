@@ -121,82 +121,82 @@ class _AdminOtpVerificationState extends State<AdminOtpVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Resourcely",style:TextStyle(fontSize: 20,fontFamily: "Mono",fontWeight: FontWeight.w500),),
-        backgroundColor: Color(0xFF00796B),
-        foregroundColor: Colors.white,
-      ),
-      body:Container(
-        margin: EdgeInsets.only(top:70),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: TextField(
-                controller: otp_controller,
-                decoration: InputDecoration(
-                  // errorText: em_err_msg!=null ? em_err_msg : college_email,
-                    errorBorder:OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                            color: Colors.red,
-                            width: 3
-                        )) ,
-                    labelText: "Enter Otp",
-                    prefixIcon: Icon(Icons.pin,color: Colors.grey,),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                            color: Color(0xFF00796B),
-                            width: 3
-                        )),
-                    labelStyle: TextStyle(color:Colors.grey,fontFamily: "Mono"),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                            color: Colors.lightGreen,
-                            width: 3
-                        )
-                    )
-                ),
-              ),
-            ),
-            // SizedBox(height: 30,),
-            SizedBox(
-              width:double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.only(left:50,right:55),
-                child: ElevatedButton(
-                  onPressed: () {
-                    verifyOtp(otp_controller.text.toString().trim());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00796B),
-                    foregroundColor: Colors.white,
-                    overlayColor: Colors.green,
-                    padding: EdgeInsetsGeometry.all(18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(11),
-                    ),
-                  ),
-                  child:Text(
-                    "Verify",
-                    style: TextStyle(
-                      fontFamily: "Mono",
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // ElevatedButton(onPressed: (){
-            //   Navigator.push(context, MaterialPageRoute(builder: (context){
-            //     return Currentfacilityusing();
-            //   }));
-            // }, child: Text("view"))
-          ],
+        appBar: AppBar(
+          title: Text("Resourcely",style:TextStyle(fontSize: 20,fontFamily: "Mono",fontWeight: FontWeight.w500),),
+          backgroundColor: Color(0xFF00796B),
+          foregroundColor: Colors.white,
         ),
-      )
+        body:Container(
+          margin: EdgeInsets.only(top:70),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: TextField(
+                  controller: otp_controller,
+                  decoration: InputDecoration(
+                    // errorText: em_err_msg!=null ? em_err_msg : college_email,
+                      errorBorder:OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                              color: Colors.red,
+                              width: 3
+                          )) ,
+                      labelText: "Enter Otp",
+                      prefixIcon: Icon(Icons.pin,color: Colors.grey,),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                              color: Color(0xFF00796B),
+                              width: 3
+                          )),
+                      labelStyle: TextStyle(color:Colors.grey,fontFamily: "Mono"),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.lightGreen,
+                              width: 3
+                          )
+                      )
+                  ),
+                ),
+              ),
+              // SizedBox(height: 30,),
+              SizedBox(
+                width:double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.only(left:50,right:55),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      verifyOtp(otp_controller.text.toString().trim());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF00796B),
+                      foregroundColor: Colors.white,
+                      overlayColor: Colors.green,
+                      padding: EdgeInsetsGeometry.all(18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                    ),
+                    child:Text(
+                      "Verify",
+                      style: TextStyle(
+                        fontFamily: "Mono",
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // ElevatedButton(onPressed: (){
+              //   Navigator.push(context, MaterialPageRoute(builder: (context){
+              //     return Currentfacilityusing();
+              //   }));
+              // }, child: Text("view"))
+            ],
+          ),
+        )
     );
   }
 }

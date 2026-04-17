@@ -405,202 +405,242 @@ class _PcroomcoverpageState extends State<Pcroomcoverpage> {
         backgroundColor: const Color(0xFF00796B),
         foregroundColor: Colors.white,
       ),
-      body: Container(
-        margin: const EdgeInsets.only(top: 2),
-        padding: const EdgeInsets.all(30),
-        child: GridView.builder(
-          itemCount: 4,
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 300,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 25,
-            mainAxisExtent: 238,
-          ),
-          itemBuilder: (context, index) {
+      body: SingleChildScrollView(
+    child: Container(
+    margin: const EdgeInsets.only(top: 2),
+    padding: const EdgeInsets.all(30),
+    child: Column(
+    children: List.generate(4, (index) {
+    return Container(
+    width: double.infinity,
+    margin: const EdgeInsets.only(bottom: 20),
+    child: Card(
+    child: Column(
+    children: [
+    Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: SizedBox(
+    width: double.infinity,
+    height: 180,
+    child: Image.network(
+    "https://tse2.mm.bing.net/th/id/OIP.uUwuVyEOr4oYpzjFO9kU2wHaFj?pid=Api&P=0&h=220",
+    fit: BoxFit.cover,
+    ),
+    ),
+    ),
 
-            return Card(
-              child: Column(
-                children: [
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.network(
-                      "https://tse2.mm.bing.net/th/id/OIP.uUwuVyEOr4oYpzjFO9kU2wHaFj?pid=Api&P=0&h=220",
-                    ),
-                  ),
-
-                  /// BOOK BUTTON
-                  SizedBox(
-                    width: 160,
-                    child: TextButton(
-                      style: ButtonStyle(
-                        backgroundColor: const WidgetStatePropertyAll(Color(0xFF007968)),
-                        padding: const WidgetStatePropertyAll(EdgeInsets.all(10)),
-                      ),
-                      onPressed: () async {
-                        pc_number = index + 1;
-
-                        await fetch_booking_time();
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return Pcbookingpage(
-                                pcnumber: index + 1,
-                                bookingsByDate:
-                                pc_bookings[pc_number] ?? {},
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "Book PC ${index + 1}",
-                        style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 3),
-
-                  /// VIEW SLOT BUTTON
-                  SizedBox(
-                    width: 160,
-                    child: TextButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                        WidgetStatePropertyAll(Colors.grey.shade400),
-                        padding: const WidgetStatePropertyAll(
-                            EdgeInsets.all(10)),
-                      ),
-                      onPressed: () async {
-
-                        pc_number = index + 1;
-                        await fetch_booking_time();
-
-                        if (dateMinMax.isEmpty) {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                              title: const Text(
-                                "All Slots Available",
-                                style: TextStyle(color: Colors.green),
-                              ),
-                              content: const Text(
-                                "Still No booking done for this PC.",
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context),
-                                  child: const Text("OK"),
-                                )
-                              ],
-                            ),
-                          );
-                          return;
-                        }
-
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text("Booked Slots"),
-                              content: SizedBox(
-                                width: 400,
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-
-                                      /// Header
-                                      Row(
-                                        children: const [
-                                          Expanded(
-                                            flex: 3,
-                                            child: Text("Date",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                    FontWeight.bold)),
-                                          ),
-                                          Expanded(
-                                            flex: 5,
-                                            child: Text("Time",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                    FontWeight.bold)),
-                                          ),
-                                        ],
-                                      ),
-                                      const Divider(),
-
-                                      /// Actual Slots
-                                      ...dateMinMax.entries.map((entry) {
-
-                                        final date = entry.key;
-                                        final slots = entry.value;
-
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 6),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                flex: 3,
-                                                child: Text(date),
-                                              ),
-                                              Expanded(
-                                                flex: 5,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                                  children:
-                                                  slots.map((slot) {
-                                                    final times =
-                                                    slot.split(",");
-                                                    return Text(
-                                                        "${times[0]} - ${times[1]}");
-                                                  }).toList(),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context),
-                                  child: const Text("Close"),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Text(
-                        "View Slot",
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey.shade800),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+    /// BOOK BUTTON
+    Padding(
+      padding: const EdgeInsets.only(left:8,right: 8),
+      child: SizedBox(
+      width: double.infinity,
+      child: TextButton(
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(11))),
+      backgroundColor: const WidgetStatePropertyAll(
+      Color(0xFF007968),
       ),
+      padding: const WidgetStatePropertyAll(
+      EdgeInsets.all(10),
+      ),
+      ),
+      onPressed: () async {
+      pc_number = index + 1;
+
+      await fetch_booking_time();
+
+      Navigator.push(
+      context,
+      MaterialPageRoute(
+      builder: (context) {
+      return Pcbookingpage(
+      pcnumber: index + 1,
+      bookingsByDate:
+      pc_bookings[pc_number] ?? {},
+      );
+      },
+      ),
+      );
+      },
+      child: Text(
+      "Book PC ${index + 1}",
+      style: const TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
+      ),
+      ),
+      ),
+      ),
+    ),
+
+    const SizedBox(height: 3),
+
+    /// VIEW SLOT BUTTON
+    Padding(
+      padding: const EdgeInsets.only(left:8,right: 8),
+      child: SizedBox(
+      width: double.infinity,
+      child: TextButton(
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(11))),
+      backgroundColor:
+      WidgetStatePropertyAll(
+      Colors.grey.shade400,
+      ),
+      padding: const WidgetStatePropertyAll(
+      EdgeInsets.all(10),
+      ),
+      ),
+      onPressed: () async {
+      pc_number = index + 1;
+      await fetch_booking_time();
+
+      if (dateMinMax.isEmpty) {
+      showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+      title: const Text(
+      "All Slots Available",
+      style: TextStyle(
+      color: Colors.green,
+      ),
+      ),
+      content: const Text(
+      "Still No booking done for this PC.",
+      ),
+      actions: [
+      TextButton(
+      onPressed: () =>
+      Navigator.pop(context),
+      child: const Text("OK"),
+      )
+      ],
+      ),
+      );
+      return;
+      }
+
+      showDialog(
+      context: context,
+      builder: (context) {
+      return AlertDialog(
+      title: const Text("Booked Slots"),
+      content: SizedBox(
+      width: 400,
+      child: SingleChildScrollView(
+      child: Column(
+      children: [
+      Row(
+      children: const [
+      Expanded(
+      flex: 3,
+      child: Text(
+      "Date",
+      style: TextStyle(
+      fontWeight:
+      FontWeight.bold,
+      ),
+      ),
+      ),
+      Expanded(
+      flex: 5,
+      child: Text(
+      "Time",
+      style: TextStyle(
+      fontWeight:
+      FontWeight.bold,
+      ),
+      ),
+      ),
+      ],
+      ),
+      const Divider(),
+
+      ...dateMinMax.entries.map(
+      (entry) {
+      final date = entry.key;
+      final slots =
+      entry.value;
+
+      return Padding(
+      padding:
+      const EdgeInsets
+          .symmetric(
+      vertical: 6,
+      ),
+      child: Row(
+      crossAxisAlignment:
+      CrossAxisAlignment
+          .start,
+      children: [
+      Expanded(
+      flex: 3,
+      child:
+      Text(date),
+      ),
+      Expanded(
+      flex: 5,
+      child:
+      Column(
+      crossAxisAlignment:
+      CrossAxisAlignment
+          .start,
+      children: slots
+          .map(
+      (slot) {
+      final times =
+      slot.split(
+      ",");
+      return Text(
+      "${times[0]} - ${times[1]}",
+      );
+      }).toList(),
+      ),
+      ),
+      ],
+      ),
+      );
+      },
+      ).toList(),
+      ],
+      ),
+      ),
+      ),
+      actions: [
+      TextButton(
+      onPressed: () =>
+      Navigator.pop(
+      context),
+      child:
+      const Text("Close"),
+      ),
+      ],
+      );
+      },
+      );
+      },
+      child: Text(
+      "View Slot",
+      style: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w700,
+      color: Colors.grey.shade800,
+      ),
+      ),
+      ),
+      ),
+    ),
+
+    const SizedBox(height: 10),
+    ],
+    ),
+    ),
+    );
+    }),
+    ),
+    ),
+    ),
     );
   }
 }

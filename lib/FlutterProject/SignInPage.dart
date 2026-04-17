@@ -8,6 +8,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter_firebase/FlutterProject/auth_wrapper.dart";
+import "package:google_sign_in/google_sign_in.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 class Signinpage extends StatefulWidget {
@@ -29,7 +30,120 @@ class _SigninpageState extends State<Signinpage> {
   bool obsecure=true;
   bool isloading=false;
   String? email_exists;
+  Future<void> continueWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email'],
+      );
 
+      // 🔴 Important: force fresh login (fixes many issues)
+      await googleSignIn.signOut();
+
+      final GoogleSignInAccount? googleUser =
+      await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        print("User cancelled sign-in");
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+
+      final accessToken = googleAuth.accessToken;
+      final idToken = googleAuth.idToken;
+
+      print("AccessToken: $accessToken");
+      print("IdToken: $idToken");
+
+      // 🔴 Safety check
+      if (accessToken == null || idToken == null) {
+        throw Exception("Google tokens are null → config issue");
+      }
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: accessToken,
+        idToken: idToken,
+      );
+
+      final UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      await saveUserToFirestore(userCredential);
+
+    } catch (e) {
+      print("Google Sign-In Error: $e");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Google Sign-In Failed"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> saveUserToFirestore(UserCredential userCredential) async {
+    final user = userCredential.user!;
+    final userEmail = user.email ?? "";
+
+    if (!userEmail.endsWith("@ves.ac.in")) {
+      await FirebaseAuth.instance.signOut();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Only College email is allowed",
+            style: TextStyle(fontSize: 16, fontFamily: "Mono", color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final userRef =
+    FirebaseFirestore.instance.collection("Users").doc(user.uid);
+    final snapshot = await userRef.get();
+
+    if (!snapshot.exists) {
+      await userRef.set({
+        "fullname": user.displayName,
+        "email": user.email,
+        "role":"Student",
+        "authProvider": "google",
+        "createdAt": FieldValue.serverTimestamp(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "User Signed Up SuccessFully!",
+            style: TextStyle(fontSize: 16, fontFamily: "Mono", color: Colors.white),
+          ),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "User Signed In SuccessFully!",
+            style: TextStyle(fontSize: 16, fontFamily: "Mono", color: Colors.white),
+          ),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
+    Timer(const Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => AuthWrapper()));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +153,8 @@ class _SigninpageState extends State<Signinpage> {
           backgroundColor: Color(0xFF00796B),
           foregroundColor: Colors.white,
         ),
-        body:Container(
-          color:Colors.white,
+        body:SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Container(
             padding: EdgeInsets.all(15),
             margin: EdgeInsets.only(top:80),
@@ -255,31 +369,71 @@ class _SigninpageState extends State<Signinpage> {
                 SizedBox(
                   height: 15,
                 ),
+                Text("Or", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 15),
                 SizedBox(
-                  child: Text("Or",style: TextStyle(fontWeight: FontWeight.bold),),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                SizedBox(
-                  width:double.infinity,
-                  child: ElevatedButton(style:ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(Colors.white),
-                      overlayColor: WidgetStatePropertyAll(Colors.white),
-                      padding: WidgetStatePropertyAll(EdgeInsets.all(15))
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(Colors.white),
+                          overlayColor: WidgetStatePropertyAll(Colors.white),
+                          padding: WidgetStatePropertyAll(EdgeInsets.all(11)),
+                          shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius:BorderRadius.circular(11),side: BorderSide(color: Color(0xFF00796B))))
 
-                  ),onPressed: (){
-                    Navigator.push(context,MaterialPageRoute(builder: (context){
-                      return EmailSigninOtp();
-                    }));
-                  }, child:Row(
-                    children: [
-                      Container(margin:EdgeInsets.only(left:100),child: Icon(Icons.fiber_pin_rounded,size: 30,),),
-                      SizedBox(width:30),
-                      Container(child: Text("Verify Via OTP",style: TextStyle(color:Colors.grey,fontFamily: "Mono",fontSize: 18),))
-                    ],
-                  )),
+                      ),
+                      onPressed: continueWithGoogle,
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(left: 10),
+                            child: CircleAvatar(
+                              radius: 25,
+                              backgroundImage: NetworkImage(
+                                "https://tse3.mm.bing.net/th/id/OIP.uBYsSL7JDekYP3VpxWZvYQHaHa?pid=Api&P=0&h=220",
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "Continue with Google",
+                            style: TextStyle(
+                              color: Color(0xFF00796B),
+                              fontFamily: "Mono",
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      )
+                  ),
                 ),
+                // SizedBox(
+                //   child: Text("Or",style: TextStyle(fontWeight: FontWeight.bold),),
+                // ),
+                // SizedBox(
+                //   height: 15,
+                // ),
+                // SizedBox(
+                //   width:double.infinity,
+                //   child: ElevatedButton(style:ButtonStyle(
+                //       backgroundColor: WidgetStatePropertyAll(Colors.white),
+                //       overlayColor: WidgetStatePropertyAll(Colors.white),
+                //       padding: WidgetStatePropertyAll(EdgeInsets.all(15)),
+                //     shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius:BorderRadius.circular(11),side: BorderSide(color: Color(0xFF00796B))))
+                //
+                //   ),onPressed: (){
+                //     Navigator.push(context,MaterialPageRoute(builder: (context){
+                //       return EmailSigninOtp();
+                //     }));
+                //   }, child:Wrap(
+                //     children: [
+                //       Container(child: Icon(Icons.fiber_pin_rounded,size: 30,color: Color(0xFF00796B),)),
+                //       SizedBox(width:30),
+                //       Container(child: Text("Verify Via OTP",style: TextStyle(color:Color(0xFF00796B),fontFamily: "Mono",fontSize: 18,),))
+                //     ],
+                //   )),
+                // ),
                 Row(
                   children: [
                     Container(

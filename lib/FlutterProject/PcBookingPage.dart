@@ -302,92 +302,158 @@ class _PcbookingpageState extends State<Pcbookingpage> {
                 ),
               ),
               SizedBox(height: 30,),
-              Container(
-                height: selectedDate!=null && startTime!=null && endTime!=null? 200 :150,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                    color: const Color(0xFF00796B),
-                    width: 1.5,
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Container(
+                  width: double.infinity,
+                  height: selectedDate != null &&
+                      startTime != null &&
+                      endTime != null
+                      ? 320
+                      : 300,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: const Color(0xFF00796B),
+                      width: 1.5,
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text("Select Date : ",style: TextStyle(fontFamily: "Mono",color: Color(0xFF007968),
-                            fontWeight: FontWeight.w700,fontSize:16),),
-                        SizedBox(
-                          width: 100,
-                          child:TextButton(style:ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(Color(0xFF007968)),
-                              padding: WidgetStatePropertyAll(EdgeInsetsGeometry.all(10))
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// DATE ROW
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Select Date :",
+                            style: TextStyle(
+                              fontFamily: "Mono",
+                              color: Color(0xFF007968),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
                           ),
+                          SizedBox(width: 10,),
+                          SizedBox(
+                            width: 100,
+                            child: TextButton(
+                              style: ButtonStyle(
+                                shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(11))),
+                                backgroundColor: WidgetStatePropertyAll(
+                                  Color(0xFF007968),
+                                ),
+                                padding: WidgetStatePropertyAll(
+                                  EdgeInsets.all(10),
+                                ),
+                              ),
                               onPressed: () async {
-                                 DateTime now = DateTime.now();
-                                DateTime dayAfterTomorrow = now.add(const Duration(days: 2));
+                                DateTime now = DateTime.now();
+                                DateTime dayAfterTomorrow =
+                                now.add(const Duration(days: 2));
 
-                                DateTime? datePicked = await showDatePicker(
+                                DateTime? datePicked =
+                                await showDatePicker(
                                   context: context,
                                   initialDate: selectedDate ??
                                       (_isAfterBookingHours
-                                          ? now.add(const Duration(days: 1))
+                                          ? now.add(
+                                          const Duration(days: 1))
                                           : now),
                                   firstDate: _isAfterBookingHours
-                                      ? DateTime(now.year, now.month, now.day + 1)
-                                      : DateTime(now.year, now.month, now.day),
+                                      ? DateTime(
+                                      now.year,
+                                      now.month,
+                                      now.day + 1)
+                                      : DateTime(
+                                      now.year,
+                                      now.month,
+                                      now.day),
                                   lastDate: DateTime(
                                     dayAfterTomorrow.year,
                                     dayAfterTomorrow.month,
                                     dayAfterTomorrow.day,
                                   ),
-
-
-
-
                                 );
 
                                 if (datePicked != null) {
-                                  bool isValid = await validateDate(datePicked);
+                                  bool isValid =
+                                  await validateDate(datePicked);
 
                                   if (!isValid) return;
+
                                   setState(() {
                                     selectedDate = datePicked;
-                                    startTime = null;   // reset times
+                                    startTime = null;
                                     endTime = null;
                                     timeError = null;
                                     dateError = null;
                                   });
                                 }
                               },
-                              child:Icon(Icons.date_range,color: Colors.white,)) ,
-                        ),
-                        SizedBox(width: 10,),
-                        if(dateError!=null)
-                          Text("Date Required",style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600))
-
-                      ],
-                    ),
-                    SizedBox(height: 10,),
-                    Row(
-                      children: [
-                        Text("Start Time :  ",style: TextStyle(fontFamily: "Mono",color: Color(0xFF007968),
-                            fontWeight: FontWeight.w700,fontSize:16),),
-                        SizedBox(
-                          child:TextButton(style:ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(Color(0xFF007968)),
-                              padding: WidgetStatePropertyAll(EdgeInsetsGeometry.all(10))
+                              child: const Icon(
+                                Icons.date_range,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+
+                      if (dateError != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          "Date Required",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 18),
+
+                      /// TIME ROW
+                      Row(
+                        children: [
+                          Text(
+                            "Start Time :",
+                            style: TextStyle(
+                              fontFamily: "Mono",
+                              color: Color(0xFF007968),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(width: 20,),
+                          SizedBox(
+                            width: 100,
+                            child: TextButton(
+                              style: ButtonStyle(
+                                shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(11))),
+                                backgroundColor:
+                                WidgetStatePropertyAll(
+                                  Color(0xFF007968),
+                                ),
+                                padding: WidgetStatePropertyAll(
+                                  EdgeInsets.all(10),
+                                ),
+                              ),
                               onPressed: () async {
-                                final picked = await showTimePicker(
+                                final picked =
+                                await showTimePicker(
                                   context: context,
                                   initialTime: TimeOfDay.now(),
                                 );
-
+                            
                                 if (picked != null) {
-                                  final error = validateTime(picked: picked, isStart: true);
+                                  final error = validateTime(
+                                    picked: picked,
+                                    isStart: true,
+                                  );
+                            
                                   setState(() {
                                     if (error != null) {
                                       timeError = error;
@@ -398,25 +464,55 @@ class _PcbookingpageState extends State<Pcbookingpage> {
                                   });
                                 }
                               },
-
-                              child:Icon(Icons.punch_clock_rounded,color: Colors.white,)) ,
-                        ),
-                        SizedBox(width: 20,),
-                        Text("End Time :  ",style: TextStyle(fontFamily: "Mono",color: Color(0xFF007968),
-                            fontWeight: FontWeight.w700,fontSize:16),),
-                        SizedBox(
-                          child:TextButton(style:ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(Color(0xFF007968)),
-                              padding: WidgetStatePropertyAll(EdgeInsetsGeometry.all(10))
+                              child: const Icon(
+                                Icons.punch_clock_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Row(
+                        children: [
+                          Text(
+                            "End Time :",
+                            style: TextStyle(
+                              fontFamily: "Mono",
+                              color: Color(0xFF007968),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(width: 30,),
+                          SizedBox(
+                            width: 100,
+                            child: TextButton(
+                              style: ButtonStyle(
+                                shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(11))),
+                                backgroundColor:
+                                WidgetStatePropertyAll(
+                                  Color(0xFF007968),
+                                ),
+                                padding: WidgetStatePropertyAll(
+                                  EdgeInsets.all(10),
+                                ),
+                              ),
                               onPressed: () async {
-                                final picked = await showTimePicker(
+                                final picked =
+                                await showTimePicker(
                                   context: context,
                                   initialTime: TimeOfDay.now(),
                                 );
 
                                 if (picked != null) {
-                                  final error = validateTime(picked: picked, isStart: false);
+                                  final error = validateTime(
+                                    picked: picked,
+                                    isStart: false,
+                                  );
+
                                   setState(() {
                                     if (error != null) {
                                       timeError = error;
@@ -427,28 +523,62 @@ class _PcbookingpageState extends State<Pcbookingpage> {
                                   });
                                 }
                               },
-
-                              child:Icon(Icons.punch_clock_rounded,color: Colors.white,)) ,
-                        )
-                      ],
-                    ),
-                    if (timeError != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          timeError!,
-                          style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
-                        ),
+                              child: const Icon(
+                                Icons.punch_clock_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    SizedBox(height: 10,),
-                    if(selectedDate!=null && startTime!=null && endTime!=null)...[
-                      Container(child: Text("Selected Date - ${DateFormat("yMd").format(selectedDate!)}",style: TextStyle(color: Color(0xFF00796B), fontWeight: FontWeight.w600,fontFamily: "Mono")),),
-                      Container(child: Text("Start Time - ${formatTimeOfDay(startTime!)}",style: TextStyle(color: Color(0xFF00796B), fontWeight: FontWeight.w600,fontFamily: "Mono")),),
-                      Container(child: Text("End Time - ${formatTimeOfDay(endTime!)}",style: TextStyle(color: Color(0xFF00796B), fontWeight: FontWeight.w600,fontFamily: "Mono")),),
-                    ] ],
 
+                      if (timeError != null) ...[
+                        const SizedBox(height: 10),
+                        Text(
+                          timeError!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 16),
+
+                      /// SELECTED DETAILS
+                      if (selectedDate != null &&
+                          startTime != null &&
+                          endTime != null) ...[
+                        Text(
+                          "Selected Date - ${DateFormat("yMd").format(selectedDate!)}",
+                          style: const TextStyle(
+                            color: Color(0xFF00796B),
+                            fontWeight: FontWeight.w600,
+                            fontFamily: "Mono",
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "Start Time - ${formatTimeOfDay(startTime!)}",
+                          style: const TextStyle(
+                            color: Color(0xFF00796B),
+                            fontWeight: FontWeight.w600,
+                            fontFamily: "Mono",
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "End Time - ${formatTimeOfDay(endTime!)}",
+                          style: const TextStyle(
+                            color: Color(0xFF00796B),
+                            fontWeight: FontWeight.w600,
+                            fontFamily: "Mono",
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-
               ),
               const SizedBox(height: 30),
 
@@ -461,12 +591,12 @@ class _PcbookingpageState extends State<Pcbookingpage> {
                   crossAxisCount: 1,
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 20,
-                  mainAxisExtent: 287,
+                  mainAxisExtent: 305,
                   childAspectRatio: 0.9,
                 ),
                 itemBuilder: (context, index) {
                   return Container(
-                    padding: const EdgeInsets.only(left:15,right:15,top:15,bottom: 5),
+                    padding: const EdgeInsets.only(left:15,right:15,top:15,bottom:5),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(15),
@@ -626,8 +756,7 @@ class _PcbookingpageState extends State<Pcbookingpage> {
 
                 },
               ),
-              const SizedBox(height: 20),
-
+              // const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
