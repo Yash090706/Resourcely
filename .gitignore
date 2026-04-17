@@ -45,3 +45,5 @@ app.*.map.json
 /android/app/release
 # Firebase Admin Secret Key
 Node-Flutter/serviceAccountKey.json
+
+Node-Flutter/.env
